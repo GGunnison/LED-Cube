@@ -17,14 +17,14 @@
 #                   default_serial = "avrdoper"
 # FUSES ........ Parameters for avrdude to flash the fuses appropriately.
 
-DEVICE     = atmega8
-CLOCK      = 8000000
-PROGRAMMER = #-c stk500v2 -P avrdoper
+DEVICE     = atmega32
+CLOCK      = 1000000
+PROGRAMMER = #-c ubsasp -P avrdoper
 OBJECTS    = main.o
-FUSES      = -U hfuse:w:0xd9:m -U lfuse:w:0x24:m
+FUSES      = -U hfuse:w:0x99:m -U lfuse:w:0xe1:m
 
 # ATMega8 fuse bits used above (fuse bits for other devices are different!):
-# Example for 8 MHz internal oscillator
+# Example for 8 MHz internopeal oscillator
 # Fuse high byte:
 # 0xd9 = 1 1 0 1   1 0 0 1 <-- BOOTRST (boot reset vector at 0x0000)
 #        ^ ^ ^ ^   ^ ^ ^------ BOOTSZ0

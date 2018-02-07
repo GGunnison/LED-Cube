@@ -1,22 +1,22 @@
 /* Name: main.c
  * Author: Grant Gunnison
  * with help from Newbiehack.com
+ *
+ *
+ *First test script to get an led to light up from pin 1 on the Atmega32
  */
 
 #include <avr/io.h>
 
 int main(void)
 {
-    /* insert your hardware initialization here */
-    //initialize port for LED's 
-    DDRB = 0b00000001;
-    //PORTB = 0b00000000;
-    TCCR1B = 0b00000001;
+    DDRB |= 0x01; //initialize pin 1 as an output port
+    TCCR1B = 0x01; //set cs10 pin for timer to use internal oscilator with no prescaling
     while(1){
     	
-    	if (TCNT1 > 40000){
-    		TCNT1 = 0;
-    		PORTB ^= 1<< PINB0;
+    	if (TCNT1 > 40000){ //set cycle count 
+    		TCNT1 = 0;      //reset counter
+    		PORTB ^= 1<< PINB0; //flip bit to blink led
     	}
 
     }

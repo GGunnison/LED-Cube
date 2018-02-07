@@ -18,7 +18,7 @@
 
 DEVICE     = atmega32
 CLOCK      = 1000000
-PROGRAMMER = #-c usbtiny -P avrdoper
+PROGRAMMER = #-c usbasp -P avrdoper
 OBJECTS    = main.o
 FUSES      = -U hfuse:w:0x99:m -U lfuse:w:0xe1:m
 
