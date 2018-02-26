@@ -18,10 +18,10 @@
 # FUSES ........ Parameters for avrdude to flash the fuses appropriately.
 
 DEVICE     = atmega32
-CLOCK      = 16000000
+CLOCK      = 8000000
 PROGRAMMER = #-c usbasp -P avrdoper
 OBJECTS    = main.o
-FUSES      = -U hfuse:w:0x99:m -U lfuse:w:0xCF:m
+FUSES      = -U hfuse:w:0x99:m -U lfuse:w:0xE4:m
 
 # ATMega8 fuse bits used above (fuse bits for other devices are different!):
 # Example for 8 MHz internal oscillator

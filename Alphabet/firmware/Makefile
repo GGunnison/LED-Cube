@@ -19,9 +19,9 @@
 
 DEVICE     = atmega32
 CLOCK      = 16000000
-PROGRAMMER = #-c usbasp -P avrdoper
+PROGRAMMER = -c usbasp -P avrdoper
 OBJECTS    = main.o
-FUSES      = -U hfuse:w:0x99:m -U lfuse:w:0xCF:m
+FUSES      = -U hfuse:w:0x99:m -U lfuse:w:0xFF:m
 
 # ATMega8 fuse bits used above (fuse bits for other devices are different!):
 # Example for 8 MHz internal oscillator
@@ -30,7 +30,7 @@ FUSES      = -U hfuse:w:0x99:m -U lfuse:w:0xCF:m
 #        ^ ^ ^ ^   ^ ^ ^------ BOOTSZ0
 #        | | | |   | +-------- BOOTSZ1
 #        | | | |   +---------- EESAVE (set to 0 to preserve EEPROM over chip erase)
-#        | | | +-------------- CKOPT (clock option, depends on oscillator type)
+#        | | | +-------------- CKOPT (clocck option, depends on oscillator type)
 #        | | +---------------- SPIEN (if set to 1, serial programming is disabled)
 #        | +------------------ WDTON (if set to 0, watchdog is always on)
 #        +-------------------- RSTDISBL (if set to 0, RESET pin is disabled)

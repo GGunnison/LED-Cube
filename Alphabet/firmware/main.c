@@ -11,10 +11,6 @@
 #include <avr/interrupt.h>
 
 
-#ifndef F_CPU
-#define F_CPU 160000000UL
-#endif
-
 
 
 //Defining macros to be used throughout code.
@@ -29,8 +25,9 @@ volatile unsigned char level = 0;
 volatile unsigned char cycleCount = 0;
 volatile unsigned char cycleFlag =0;
 volatile unsigned char letterIndex = 0;
-unsigned char frequency = 16;
+unsigned char frequency = 256;
 unsigned char time = 1;
+int interruptTime = 25; //Cycle Counts. Divide by basic frequency for time. 
 
 //Pinout from the Atmega32 to the SN74HC595
 	// PB0 = SRCLK 0x00
@@ -44,7 +41,7 @@ int main(void)
 	DDRB |= 0x0F;						// Initialize output pins
 	TCCR1B = (1<<CS10) | (1<<WGM12);	// No prescaling and setting up Waveform generation mode
 	TIMSK |= 1<<OCIE1A;					// Initializing the compare A register
-	OCR1A = 100;							// Interrupt timer count
+	OCR1A = interruptTime;						// Interrupt timer count
 	bit_set(PORTB, 0x00);				// Enable OE for the SN74HC595
 	sei();								// Enable global interrupts
 

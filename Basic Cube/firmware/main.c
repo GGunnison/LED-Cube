@@ -11,9 +11,9 @@
 #include <avr/interrupt.h>
 
 
-#ifndef F_CPU
-#define F_CPU 160000000UL
-#endif
+// #ifndef F_CPU
+// #define F_CPU 160000000UL
+// #endif
 
 
 
