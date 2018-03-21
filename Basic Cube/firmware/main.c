@@ -29,7 +29,7 @@ volatile unsigned char level = 0;
 volatile unsigned char cycleCount = 0;
 volatile unsigned char cycleFlag =0;
 volatile unsigned char letterIndex = 0;
-unsigned char frequency = 16;
+unsigned char frequency = 255;
 unsigned char time = 1;
 
 //Pinout from the Atmega32 to the SN74HC595
@@ -45,7 +45,7 @@ int main(void)
 	TCCR1B = (1<<CS10) | (1<<WGM12);	// No prescaling and setting up Waveform generation mode
 	TIMSK |= 1<<OCIE1A;					// Initializing the compare A register
 	OCR1A = 100;							// Interrupt timer count
-	bit_set(PORTB, 0x00);				// Enable OE for the SN74HC595
+	bit_clear(PORTB, 0x08);				// Enable OE for the SN74HC595
 	sei();								// Enable global interrupts
 
 	//Do nothing outside of the interrupt

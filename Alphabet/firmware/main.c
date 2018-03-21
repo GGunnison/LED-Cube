@@ -9,6 +9,7 @@
 #include "CubeData.h"
 #include <avr/io.h>
 #include <avr/interrupt.h>
+#include <math.h> 
 
 
 
@@ -22,12 +23,15 @@
 //Defining global variables that are used in script
 volatile unsigned char counter = 0;
 volatile unsigned char level = 0;
-volatile unsigned char cycleCount = 0;
+volatile long cycleCount = 0;
 volatile unsigned char cycleFlag =0;
 volatile unsigned char letterIndex = 0;
-unsigned char frequency = 256;
-unsigned char time = 1;
-int interruptTime = 25; //Cycle Counts. Divide by basic frequency for time. 
+unsigned char frequency = 255;
+float time1 = .3;
+int interruptTime = 5000; //Cycle Counts. Divide by basic frequency for time.
+volatile char completeFlag = 0;
+
+volatile char word[] = "I LOVE YOU";
 
 //Pinout from the Atmega32 to the SN74HC595
 	// PB0 = SRCLK 0x00
@@ -41,8 +45,8 @@ int main(void)
 	DDRB |= 0x0F;						// Initialize output pins
 	TCCR1B = (1<<CS10) | (1<<WGM12);	// No prescaling and setting up Waveform generation mode
 	TIMSK |= 1<<OCIE1A;					// Initializing the compare A register
-	OCR1A = interruptTime;						// Interrupt timer count
-	bit_set(PORTB, 0x00);				// Enable OE for the SN74HC595
+	OCR1A = interruptTime;					// Interrupt timer count
+	bit_clear(PORTB, 0x08);				// Enable OE for the SN74HC595
 	sei();								// Enable global interrupts
 
 	//Do nothing outside of the interrupt
@@ -50,41 +54,50 @@ int main(void)
     	if (cycleFlag){
     		cycleCount++;
     		cycleFlag = 0;
-    	}if (cycleCount == (frequency*time)){
-    		letterIndex = (letterIndex +1)%26;
+    	}if (cycleCount == lrint(frequency*time1)){
+    		letterIndex = (letterIndex +1)%sizeof(word);
     		cycleCount = 0;
     	}
 
     }
 }	
 
-
-ISR(TIMER1_COMPA_vect){					// Interrupt vector corresponding to OCIE1A 
-	
-	bit_flip(PORTB, 0x00);				// Flip SRCLK to create clock signal for SN74HC595
-	if (bit_is_set(PORTB, 0)){							// Only when the clock is high do we want to move information in.
-		
-		if (((letterLib[letterIndex][level][(counter/8)]) & (1 << counter % 8)) != 0){		// write the bit to PIN 2 that is up next in our byte
-			bit_set(PORTB, 0x04);		// if the bit is a 1 use this.
-		}
-		else{
-			bit_clear(PORTB, 0x04);	     //check if the bit is a 0 use this.
-		}
-		
-	}else{
-		if (counter == 72){				
-			bit_set(PORTB, 0x02);		// Toggle RCLK once byte is moved in.
-			counter = 0;
-			level++;
-			if (level == 8){
-				level = 0;
-				cycleFlag = 1;
-			}
-		}	
-		counter++;
-		bit_clear(PORTB, 0x02);				// We want to keep RCLK low until we have shifted the entire byte in
-
+ISR(TIMER1_COMPA_vect){
+	completeFlag = writeLevel(letterLib[5][level], 0x01, 0x02, 0x04, 0x08);
+	level++;
+	if (level == 8){
+		level = 0;
+		cycleFlag =1;
 	}
 }
+
+
+// ISR(TIMER1_COMPA_vect){					// Interrupt vector corresponding to OCIE1A 
+	
+// 	bit_flip(PORTB, 0x00);				// Flip SRCLK to create clock signal for SN74HC595
+// 	if (bit_is_set(PORTB, 0)){							// Only when the clock is high do we want to move information in.
+		
+// 		if (((letterLib[(word[letterIndex]-65)][level][(counter/8)]) & (1 << counter % 8)) != 0){		// write the bit to PIN 2 that is up next in our byte
+// 			bit_set(PORTB, 0x04);		// if the bit is a 1 use this.
+// 		}
+// 		else{
+// 			bit_clear(PORTB, 0x04);	     //check if the bit is a 0 use this.
+// 		}
+		
+// 	}else{
+// 		if (counter == 72){				
+// 			bit_set(PORTB, 0x02);		// Toggle RCLK once byte is moved in.
+// 			counter = 0;
+// 			level++;
+// 			if (level == 8){
+// 				level = 0;
+// 				cycleFlag = 1;
+// 			}
+// 		}	
+// 		counter++;
+// 		bit_clear(PORTB, 0x02);				// We want to keep RCLK low until we have shifted the entire byte in
+
+// 	}
+// }
 
 
