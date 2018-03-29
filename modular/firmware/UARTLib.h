@@ -6,8 +6,6 @@
 #ifndef UARTInit 
 #define UARTInit 
 
-#define F_CPU 16000000UL
-
 
 #include <avr/io.h>
 #include <math.h>
@@ -16,19 +14,19 @@
 #define ODD 1
 
 //Prototypes
-void USART_Init(unsigned int baud);
+void USART_Init(unsigned int UBBR);
 void uart_init(int baud, char asyncDoubleSpeed, int dataLength, char parity, char stopBitNum);
 void uart_transmit(unsigned char data);
 unsigned char uart_receive();
 
 //initialize uart with 2 stop bits 8 data bits and even parity.
-void USART_Init (unsigned int baud)
+void USART_Init (unsigned int UBBRValue)
 {
 	//Put the upper part of the baud number here (bits 8 to 11)
-	UBRRH = (unsigned char) (baud >> 8);
+	UBRRH = (unsigned char) (UBBRValue >> 8);
 
 	//Put the remaining part of the baud number here
-	UBRRL = (unsigned char) baud; 
+	UBRRL = (unsigned char) UBBRValue; 
 
 	//Enable the receiver and transmitter
 	UCSRB = (1 << RXEN) | (1 << TXEN);
@@ -45,10 +43,10 @@ void uart_init(int baud, char asyncDoubleSpeed, int dataLength, char parity, cha
 	uint16_t UBBRValue = lrint(((F_CPU)/(baud*16UL))-1);
 
 	// Put the upper part of the baud number here (bits 8 to 11)
-	UBRRH = (unsigned char) (baud >> 8);
+	UBRRH = (unsigned char) (UBBRValue >> 8);
 
 	//Put the lower part of the baud number here (bits 0 to 7)
-	UBRRL = (unsigned char) baud;
+	UBRRL = (unsigned char) UBBRValue;
 
 	//Enable receiver & transmitter
 	UCSRB = (1<<RXEN) | (1<< TXEN);
