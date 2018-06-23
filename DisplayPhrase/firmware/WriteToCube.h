@@ -10,11 +10,12 @@
 #define writeCube
 #include <avr/io.h>
 #include <ctype.h>
+#include <avr/pgmspace.h>
 
 //Prototypes
 unsigned char writeLevelToCube(volatile unsigned char array[], unsigned char index);
-void writeLevel(volatile unsigned char array[9], unsigned char numRows, unsigned char numCol);
-void writeFullCube(volatile unsigned char array[8][9], unsigned char numRows, unsigned char numCol);
+void writeLevel(const unsigned char array[9], unsigned char numRows, unsigned char numCol);
+void writeFullCube(const unsigned char array[8][9], unsigned char numRows, unsigned char numCol);
 int writePhrase(volatile unsigned char phrase[], float cubeWriteTime, float displayTime, float percentage, volatile int counter, int index, volatile int libIndex);
 
 //Defining macros to be used throughout code.
@@ -76,7 +77,7 @@ Input: Single dimensional array representing a single level of the cube.
 Output: boolean style flag representing the completion of the method. 
 */
 
-void writeLevel(volatile unsigned char array[9], unsigned char numRows, unsigned char numCol){ 
+void writeLevel(const unsigned char array[9], unsigned char numRows, unsigned char numCol){ 
 	
 	unsigned char numElements = numCol*numRows;
 	char index;
@@ -95,7 +96,8 @@ void writeLevel(volatile unsigned char array[9], unsigned char numRows, unsigned
 			if (index == 72){				
 				bit_set(PORTB, RCLK);		// Toggle RCLK once byte is moved in.
 			}
-			if ((array[(index/8)] & (1 << index % 8)) != 0){		// write the bit to PIN 2 that is up next in our byte
+			if ((pgm_read_byte(&(array[(index/8)])) & (1 << index % 8)) != 0){
+			// if ((array[(index/8)] & (1 << index % 8)) != 0){		// write the bit to PIN 2 that is up next in our byte
 				bit_set(PORTB, DATA);		// if the bit is a 1 use this.
 			}
 			else{
@@ -118,7 +120,7 @@ if there is any amount of delay between calls of this function the last layer di
 not receive a larger amount of time to display than any of the others. 
 */
 
-void writeFullCube(volatile unsigned char array[8][9], unsigned char numRows, unsigned char numCol){
+void writeFullCube(const unsigned char array[8][9], unsigned char numRows, unsigned char numCol){
 	bit_clear(PORTB, OE);
 	char index;
 	for (index = 0; index<numRows; index++){
